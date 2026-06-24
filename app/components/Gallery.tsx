@@ -26,7 +26,7 @@ export function Gallery() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [viewMode, setViewMode] = useState<ViewMode>("feed");
   const [feedStartIndex, setFeedStartIndex] = useState(0);
   const reduceMotion = useReducedMotion();
   const { theme, toggleTheme } = useTheme();

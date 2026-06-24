@@ -3,9 +3,9 @@ export type ViewMode = "feed" | "grid";
 const STORAGE_KEY = "sunset-view-mode";
 
 export function getStoredViewMode(): ViewMode {
-  if (typeof window === "undefined") return "grid";
+  if (typeof window === "undefined") return "feed";
   const stored = localStorage.getItem(STORAGE_KEY);
-  return stored === "feed" || stored === "grid" ? stored : "grid";
+  return stored === "feed" || stored === "grid" ? stored : "feed";
 }
 
 export function setStoredViewMode(mode: ViewMode): void {

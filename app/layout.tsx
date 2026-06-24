@@ -23,13 +23,13 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sunset — Photo Gallery",
+  title: "Taiyō — Photo Gallery",
   description: "A personal space for your photographs",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Sunset",
+    title: "Taiyō",
   },
   icons: {
     icon: "/icon.svg",

@@ -97,13 +97,38 @@ export function PhotoFeed({
               data-index={i}
               className="feed-slide relative flex h-[100dvh] w-full shrink-0 snap-start snap-always items-center justify-center bg-[var(--feed-bg)]"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={url}
-                alt={photo.caption || "Photograph"}
-                className="max-h-full max-w-full object-contain"
-                draggable={false}
-              />
+              <div className="relative max-h-full max-w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt={photo.caption || "Photograph"}
+                  className="max-h-full max-w-full object-contain"
+                  draggable={false}
+                />
+                <button
+                  type="button"
+                  onClick={() => onSelect(photo.id)}
+                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full backdrop-blur-md transition-colors hover:opacity-100"
+                  style={{
+                    background: "var(--feed-action-bg)",
+                    color: "var(--feed-action-text)",
+                  }}
+                  aria-label="View photo"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    aria-hidden
+                  >
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
 
               <div
                 className="pointer-events-none absolute inset-x-0 bottom-0 px-6 pb-36 pt-24 sm:pb-28"
@@ -136,19 +161,6 @@ export function PhotoFeed({
                   </time>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => onSelect(photo.id)}
-                className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full font-mono text-[10px] backdrop-blur-sm transition-colors"
-                style={{
-                  background: "var(--feed-action-bg)",
-                  color: "var(--feed-action-text)",
-                }}
-                aria-label="View details"
-              >
-                ···
-              </button>
             </section>
           );
         })}

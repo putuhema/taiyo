@@ -7,10 +7,9 @@ import {
   deletePhoto,
   getAllPhotos,
   updatePhotoCaption,
-} from "../lib/db";
+} from "../lib/api";
 import { getStoredViewMode, setStoredViewMode, type ViewMode } from "../lib/view-mode";
 import type { Photo } from "../types";
-import { photoToBlob, photoToThumbBlob } from "../types";
 import { BottomNav } from "./BottomNav";
 import { Lightbox } from "./Lightbox";
 import { PhotoFeed } from "./PhotoFeed";
@@ -44,7 +43,7 @@ export function Gallery() {
   const thumbUrls = useMemo(() => {
     const map = new Map<string, string>();
     for (const photo of photos) {
-      map.set(photo.id, URL.createObjectURL(photoToThumbBlob(photo)));
+      map.set(photo.id, photo.thumbUrl);
     }
     return map;
   }, [photos]);
@@ -52,17 +51,10 @@ export function Gallery() {
   const fullUrls = useMemo(() => {
     const map = new Map<string, string>();
     for (const photo of photos) {
-      map.set(photo.id, URL.createObjectURL(photoToBlob(photo)));
+      map.set(photo.id, photo.url);
     }
     return map;
   }, [photos]);
-
-  useEffect(() => {
-    return () => {
-      thumbUrls.forEach((url) => URL.revokeObjectURL(url));
-      fullUrls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [thumbUrls, fullUrls]);
 
   useEffect(() => {
     getAllPhotos()
@@ -76,7 +68,7 @@ export function Gallery() {
   }, []);
 
   const handleUpload = useCallback(async (file: File, caption: string) => {
-    const photo = await addPhoto(file, caption, file.name);
+    const photo = await addPhoto(file, caption);
     setPhotos((prev) => [photo, ...prev]);
   }, []);
 
@@ -86,9 +78,9 @@ export function Gallery() {
   }, []);
 
   const handleUpdateCaption = useCallback(async (id: string, caption: string) => {
-    await updatePhotoCaption(id, caption);
+    const updated = await updatePhotoCaption(id, caption);
     setPhotos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, caption: caption.trim() || undefined } : p)),
+      prev.map((p) => (p.id === id ? updated : p)),
     );
   }, []);
 
@@ -103,7 +95,6 @@ export function Gallery() {
     <div className={`relative ${isFeed ? "h-[100dvh] overflow-hidden" : "min-h-screen"}`}>
       <div className="grain pointer-events-none fixed inset-0 z-0" />
 
-      {/* Theme toggle — top right */}
       <div className="fixed right-4 top-4 z-40 pt-[env(safe-area-inset-top)] sm:right-10 sm:top-8">
         <ThemeToggle theme={theme} onToggle={toggleTheme} />
       </div>
@@ -138,7 +129,7 @@ export function Gallery() {
               isFeed ? "text-center text-2xl sm:text-left" : "text-4xl sm:text-7xl"
             }`}
           >
-            Sunset
+            Taiyō
           </h1>
           {!isFeed && (
             <p className="mt-4 hidden max-w-sm font-sans text-sm leading-relaxed text-[var(--muted)] sm:block">
@@ -207,7 +198,7 @@ export function Gallery() {
       {!isFeed && hasPhotos && (
         <footer className="relative z-10 hidden border-t border-[var(--border)] py-8 text-center sm:block">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]/50">
-            {photos.length} photograph{photos.length !== 1 ? "s" : ""} · stored locally
+            {photos.length} photograph{photos.length !== 1 ? "s" : ""} · stored on vercel blob
           </p>
         </footer>
       )}

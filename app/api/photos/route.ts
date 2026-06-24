@@ -4,7 +4,9 @@ import { addPhoto, listPhotos } from "@/app/lib/server/blob-storage";
 export async function GET() {
   try {
     const photos = await listPhotos();
-    return NextResponse.json(photos);
+    return NextResponse.json(photos, {
+      headers: { "Cache-Control": "no-store" },
+    });
   } catch (error) {
     console.error("GET /api/photos", error);
     return NextResponse.json({ error: "Failed to load photos" }, { status: 500 });

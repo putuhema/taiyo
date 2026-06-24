@@ -1,5 +1,5 @@
 import { del, head, put } from "@vercel/blob";
-import sharp from "sharp";
+import type sharp from "sharp";
 
 const MANIFEST_PATH = "taiyo/manifest.json";
 const PHOTOS_PREFIX = "taiyo/photos";
@@ -48,10 +48,16 @@ export async function listPhotos(): Promise<StoredPhoto[]> {
   return photos.sort((a, b) => b.createdAt - a.createdAt);
 }
 
+async function loadSharp(): Promise<typeof sharp> {
+  const { default: sharp } = await import("sharp");
+  return sharp;
+}
+
 export async function addPhoto(
   buffer: Buffer,
   caption?: string,
 ): Promise<StoredPhoto> {
+  const sharp = await loadSharp();
   const id = crypto.randomUUID();
   const image = sharp(buffer, { failOn: "none" });
   const metadata = await image.metadata();

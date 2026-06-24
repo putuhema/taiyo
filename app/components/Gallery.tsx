@@ -95,14 +95,16 @@ export function Gallery() {
     <div className={`relative ${isFeed ? "h-[100dvh] overflow-hidden" : "min-h-screen"}`}>
       <div className="grain pointer-events-none fixed inset-0 z-0" />
 
-      <div className="fixed right-4 top-4 z-40 pt-[env(safe-area-inset-top)] sm:right-10 sm:top-8">
-        <ThemeToggle theme={theme} onToggle={toggleTheme} />
-      </div>
+      {!isFeed && (
+        <div className="fixed right-4 top-4 z-40 pt-[env(safe-area-inset-top)] sm:right-10 sm:top-8">
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        </div>
+      )}
 
       <header
         className={`z-20 ${
           isFeed
-            ? "fixed inset-x-0 top-0 px-4 pb-6 pr-16 pt-4 sm:px-6 sm:pr-6"
+            ? "fixed inset-x-0 top-0 grid grid-cols-[2.25rem_1fr_2.25rem] items-center gap-2 px-4 pb-6 pt-[calc(env(safe-area-inset-top)+1rem)] sm:px-6"
             : "relative mx-auto flex max-w-7xl flex-col gap-6 px-6 pb-8 pr-16 pt-14 sm:flex-row sm:items-end sm:justify-between sm:px-10 sm:pb-12 sm:pr-10 sm:pt-24"
         }`}
         style={
@@ -114,41 +116,62 @@ export function Gallery() {
             : undefined
         }
       >
-        <motion.div
-          initial={{ opacity: 0, y: reduceMotion ? 0 : 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: reduceMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {!isFeed && (
-            <p className="mb-2 hidden font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)] sm:block">
-              Personal Collection
-            </p>
-          )}
-          <h1
-            className={`font-display italic leading-none text-[var(--foreground)] ${
-              isFeed ? "text-center text-2xl sm:text-left" : "text-4xl sm:text-7xl"
-            }`}
-          >
-            Taiyō
-          </h1>
-          {!isFeed && (
-            <p className="mt-4 hidden max-w-sm font-sans text-sm leading-relaxed text-[var(--muted)] sm:block">
-              A quiet place for your photographs. Upload, caption, and grow your eye.
-            </p>
-          )}
-        </motion.div>
+        {isFeed ? (
+          <>
+            <div aria-hidden className="h-9 w-9" />
+            <motion.h1
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="col-start-2 text-center font-display text-xl italic leading-none text-[var(--foreground)]"
+            >
+              Taiyō
+              <span className="ml-1 font-sans text-[10px] font-light not-italic tracking-wide text-[var(--muted)]">
+                by Pumadara
+              </span>
+            </motion.h1>
+            <div className="justify-self-end">
+              <ThemeToggle
+                theme={theme}
+                onToggle={toggleTheme}
+                className="!h-9 !w-9"
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <p className="mb-2 hidden font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)] sm:block">
+                Personal Collection
+              </p>
+              <h1 className="font-display text-4xl italic leading-none text-[var(--foreground)] sm:text-7xl">
+                Taiyō
+                <span className="mt-2 block font-sans text-sm font-light not-italic text-[var(--muted)] sm:mt-3">
+                  by Pumadara
+                </span>
+              </h1>
+              <p className="mt-4 hidden max-w-sm font-sans text-sm leading-relaxed text-[var(--muted)] sm:block">
+                A quiet place for your photographs. Upload, caption, and grow your eye.
+              </p>
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: reduceMotion ? 0 : 0.3, duration: reduceMotion ? 0 : 0.5 }}
-          className="hidden shrink-0 items-center gap-3 sm:flex"
-        >
-          {hasPhotos && (
-            <ViewToggle mode={viewMode} onChange={handleViewChange} />
-          )}
-          <AddPhotoButton variant="desktop" onClick={() => setUploadOpen(true)} />
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: reduceMotion ? 0 : 0.3, duration: reduceMotion ? 0 : 0.5 }}
+              className="hidden shrink-0 items-center gap-3 sm:flex"
+            >
+              {hasPhotos && (
+                <ViewToggle mode={viewMode} onChange={handleViewChange} />
+              )}
+              <AddPhotoButton variant="desktop" onClick={() => setUploadOpen(true)} />
+            </motion.div>
+          </>
+        )}
       </header>
 
       {!loaded ? (

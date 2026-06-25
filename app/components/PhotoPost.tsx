@@ -52,7 +52,7 @@ export function PhotoPost({
     if (!photo) return;
     setConfirmDelete(false);
     setDownloading(false);
-    setEditingStory(!photo.journal);
+    setEditingStory(false);
     scrollRef.current?.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   }, [photo, reduceMotion]);
 
@@ -166,13 +166,25 @@ export function PhotoPost({
                     <p className="font-mono text-[10px] uppercase tracking-widest text-[var(--muted)]">
                       Story
                     </p>
-                    {photo.journal && !editingStory && (
+                    {!editingStory && (
                       <button
                         type="button"
                         onClick={() => setEditingStory(true)}
-                        className="font-mono text-[10px] uppercase tracking-widest text-[var(--accent)]"
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+                        aria-label={photo.journal ? "Edit story" : "Write story"}
                       >
-                        Edit
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          aria-hidden
+                        >
+                          <path d="M12 20h9" />
+                          <path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                        </svg>
                       </button>
                     )}
                   </div>
@@ -191,22 +203,14 @@ export function PhotoPost({
                         if (val !== (photo.journal || "")) {
                           void onUpdateJournal(photo.id, val);
                         }
-                        setEditingStory(!val.trim());
+                        setEditingStory(false);
                       }}
                     />
                   ) : photo.journal ? (
                     <div className="whitespace-pre-wrap font-sans text-base leading-[1.85] text-[var(--foreground)]">
                       {photo.journal}
                     </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setEditingStory(true)}
-                      className="font-sans text-base italic text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
-                    >
-                      Add a story…
-                    </button>
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="mt-10 border-t border-[var(--border)] pt-8">

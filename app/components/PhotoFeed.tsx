@@ -92,30 +92,33 @@ export function PhotoFeed({ photos, getUrl, onSelect }: PhotoFeedProps) {
             </button>
 
             <div className="px-3 pb-4 pt-2">
-              <div className="flex items-center gap-3">
-                <PhotoEngagement photoId={photo.id} variant="inline" />
-                <button
-                  type="button"
-                  onClick={() => handleDownload(photo)}
-                  disabled={downloadingId === photo.id}
-                  className="ml-auto flex h-9 w-9 items-center justify-center text-[var(--foreground)] transition-opacity hover:opacity-70 disabled:opacity-40"
-                  aria-label={downloadingId === photo.id ? "Saving photo" : "Download photo"}
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    aria-hidden
+              <PhotoEngagement
+                photoId={photo.id}
+                variant="inline"
+                trailing={
+                  <button
+                    type="button"
+                    onClick={() => handleDownload(photo)}
+                    disabled={downloadingId === photo.id}
+                    className="flex h-9 w-9 items-center justify-center text-[var(--foreground)] transition-opacity hover:opacity-70 disabled:opacity-40"
+                    aria-label={downloadingId === photo.id ? "Saving photo" : "Download photo"}
                   >
-                    <path d="M12 3v12" />
-                    <path d="M7 11l5 5 5-5" />
-                    <path d="M5 21h14" />
-                  </svg>
-                </button>
-              </div>
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      aria-hidden
+                    >
+                      <path d="M12 3v12" />
+                      <path d="M7 11l5 5 5-5" />
+                      <path d="M5 21h14" />
+                    </svg>
+                  </button>
+                }
+              />
 
               {photo.caption && (
                 <button

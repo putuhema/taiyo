@@ -10,6 +10,7 @@ import { CommentDrawer } from "./CommentDrawer";
 interface PhotoEngagementProps {
   photoId: string;
   variant: "lightbox" | "feed" | "inline" | "post";
+  trailing?: React.ReactNode;
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -34,7 +35,7 @@ function formatCount(n: number): string {
   return String(n);
 }
 
-function PhotoEngagementInner({ photoId, variant }: PhotoEngagementProps) {
+function PhotoEngagementInner({ photoId, variant, trailing }: PhotoEngagementProps) {
   const [clientId, setClientId] = useState("");
   const [savedAuthor, setSavedAuthor] = useState("");
   const [nameInput, setNameInput] = useState("");
@@ -126,6 +127,14 @@ function PhotoEngagementInner({ photoId, variant }: PhotoEngagementProps) {
         ? "font-mono text-[10px] uppercase tracking-widest text-[var(--muted)]"
         : "font-mono text-[10px] uppercase tracking-widest text-white/50";
 
+  const likeLabel =
+    likeCount === 1 ? "1 like" : `${formatCount(likeCount)} likes`;
+
+  const commentLabel =
+    commentCount === 1
+      ? "View 1 comment"
+      : `View all ${formatCount(commentCount)} comments`;
+
   const actions = (
     <>
       <button
@@ -153,7 +162,7 @@ function PhotoEngagementInner({ photoId, variant }: PhotoEngagementProps) {
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
         </span>
-        <span className={countClass}>{formatCount(likeCount)}</span>
+        <span className={countClass}>{!isInline ? formatCount(likeCount) : null}</span>
       </button>
 
       <button
@@ -180,7 +189,7 @@ function PhotoEngagementInner({ photoId, variant }: PhotoEngagementProps) {
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
         </span>
-        <span className={countClass}>{formatCount(commentCount)}</span>
+        <span className={countClass}>{!isInline ? formatCount(commentCount) : null}</span>
       </button>
     </>
   );
@@ -192,7 +201,28 @@ function PhotoEngagementInner({ photoId, variant }: PhotoEngagementProps) {
           {actions}
         </div>
       ) : isInline ? (
-        <div className="flex items-center gap-1">{actions}</div>
+        <div className="w-full">
+          <div className="flex w-full items-center gap-1">
+            {actions}
+            {trailing ? <div className="ml-auto shrink-0">{trailing}</div> : null}
+          </div>
+          {(likeCount > 0 || commentCount > 0) && (
+            <div className="mt-1.5 space-y-0.5">
+              {likeCount > 0 && (
+                <p className="text-sm font-semibold text-[var(--foreground)]">{likeLabel}</p>
+              )}
+              {commentCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(true)}
+                  className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+                >
+                  {commentLabel}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       ) : (
         <div
           className={`flex items-center gap-4 ${isPost ? "" : "border-t border-white/10 pt-4"}`}

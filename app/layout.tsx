@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { ServiceWorkerRegister } from "./components/ServiceWorkerRegister";
+import { ConvexClientProvider } from "./components/ConvexClientProvider";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -61,7 +62,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        {children}
+        <ConvexClientProvider>{children}</ConvexClientProvider>
         <ServiceWorkerRegister />
       </body>
     </html>

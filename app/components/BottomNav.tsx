@@ -1,10 +1,9 @@
 "use client";
 
-import type { ViewMode } from "../lib/view-mode";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface BottomNavProps {
-  mode: ViewMode;
-  onModeChange: (mode: ViewMode) => void;
   onAdd: () => void;
   hasPhotos: boolean;
 }
@@ -37,8 +36,8 @@ function FeedIcon() {
   return (
     <NavIcon>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <rect x="7" y="4" width="10" height="16" rx="2" />
-        <path d="M10 8h4M10 12h4" />
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path d="M3 9h18M9 21V9" />
       </svg>
     </NavIcon>
   );
@@ -62,34 +61,53 @@ interface NavItemProps {
   active?: boolean;
   disabled?: boolean;
   accent?: boolean;
-  onClick: () => void;
+  href?: string;
+  onClick?: () => void;
   icon: React.ReactNode;
 }
 
-function NavItem({ label, active, disabled, accent, onClick, icon }: NavItemProps) {
+function NavItem({ label, active, disabled, accent, href, onClick, icon }: NavItemProps) {
+  const className = `flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-2xl px-2 py-2 transition-colors ${
+    disabled ? "pointer-events-none opacity-30" : ""
+  } ${
+    active
+      ? "bg-[var(--nav-active-bg)] text-[var(--foreground)]"
+      : accent
+        ? "text-[var(--accent)]"
+        : "text-[var(--nav-inactive)] active:text-[var(--foreground)]"
+  }`;
+
+  const content = (
+    <>
+      {icon}
+      <span className="text-[10px] font-medium tracking-wide">{label}</span>
+    </>
+  );
+
+  if (href && !disabled) {
+    return (
+      <Link href={href} aria-label={label} aria-current={active ? "page" : undefined} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
   return (
     <button
       type="button"
       disabled={disabled}
       onClick={onClick}
       aria-label={label}
-      className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-2xl px-2 py-2 transition-colors ${
-        disabled ? "opacity-30" : ""
-      } ${
-        active
-          ? "bg-[var(--nav-active-bg)] text-[var(--foreground)]"
-          : accent
-            ? "text-[var(--accent)]"
-            : "text-[var(--nav-inactive)] active:text-[var(--foreground)]"
-      }`}
+      className={className}
     >
-      {icon}
-      <span className="text-[10px] font-medium tracking-wide">{label}</span>
+      {content}
     </button>
   );
 }
 
-export function BottomNav({ mode, onModeChange, onAdd, hasPhotos }: BottomNavProps) {
+export function BottomNav({ onAdd, hasPhotos }: BottomNavProps) {
+  const pathname = usePathname();
+
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-30 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 sm:hidden"
@@ -100,16 +118,16 @@ export function BottomNav({ mode, onModeChange, onAdd, hasPhotos }: BottomNavPro
         <NavItem
           label="Feed"
           icon={<FeedIcon />}
-          active={hasPhotos && mode === "feed"}
+          href="/feed"
+          active={hasPhotos && pathname === "/feed"}
           disabled={!hasPhotos}
-          onClick={() => hasPhotos && onModeChange("feed")}
         />
         <NavItem
           label="Gallery"
           icon={<GridIcon />}
-          active={hasPhotos && mode === "grid"}
+          href="/gallery"
+          active={hasPhotos && pathname === "/gallery"}
           disabled={!hasPhotos}
-          onClick={() => hasPhotos && onModeChange("grid")}
         />
       </div>
     </nav>

@@ -6,7 +6,7 @@ import { isImageFile } from "../lib/images";
 import { ModalPortal } from "./ModalPortal";
 
 interface UploadZoneProps {
-  onUpload: (file: File, caption: string) => Promise<void>;
+  onUpload: (file: File, caption: string, journal?: string) => Promise<void>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onSuccess?: () => void;
@@ -68,6 +68,7 @@ export function UploadZone({
 
   const [isDragging, setIsDragging] = useState(false);
   const [caption, setCaption] = useState("");
+  const [journal, setJournal] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -78,6 +79,7 @@ export function UploadZone({
 
   const reset = useCallback(() => {
     setCaption("");
+    setJournal("");
     setPreview((prev) => {
       if (prev) URL.revokeObjectURL(prev);
       return null;
@@ -142,7 +144,7 @@ export function UploadZone({
     setIsUploading(true);
     setError(null);
     try {
-      await onUpload(pendingFile, caption);
+      await onUpload(pendingFile, caption, journal);
       onSuccess?.();
       close();
     } catch (err) {
@@ -263,6 +265,24 @@ export function UploadZone({
 
                 <div className="mt-5">
                   <label
+                    htmlFor={`${inputId}-journal`}
+                    className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-[var(--accent)]"
+                  >
+                    Story
+                  </label>
+                  <textarea
+                    id={`${inputId}-journal`}
+                    value={journal}
+                    onChange={(e) => setJournal(e.target.value)}
+                    placeholder="Write the story behind this moment — it will appear below the photo like a blog post."
+                    rows={6}
+                    maxLength={5000}
+                    className="w-full resize-y rounded-sm border border-[var(--border)] bg-[var(--surface)] px-3 py-3 font-sans text-sm leading-relaxed text-[var(--foreground)] placeholder:text-[var(--muted)]/40 focus:border-[var(--accent)] focus:outline-none"
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <label
                     htmlFor={`${inputId}-caption`}
                     className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-[var(--muted)]"
                   >
@@ -273,7 +293,7 @@ export function UploadZone({
                     type="text"
                     value={caption}
                     onChange={(e) => setCaption(e.target.value)}
-                    placeholder="What did you capture?"
+                    placeholder="A short title for the post"
                     className="w-full border-b border-[var(--border)] bg-transparent py-2 font-display text-base italic text-[var(--foreground)] placeholder:text-[var(--muted)]/40 focus:border-[var(--accent)] focus:outline-none"
                   />
                 </div>

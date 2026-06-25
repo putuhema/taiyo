@@ -7,6 +7,7 @@ const PHOTOS_PREFIX = "taiyo/photos";
 export interface StoredPhoto {
   id: string;
   caption?: string;
+  journal?: string;
   createdAt: number;
   mimeType: string;
   width?: number;
@@ -48,6 +49,11 @@ export async function listPhotos(): Promise<StoredPhoto[]> {
   return photos.sort((a, b) => b.createdAt - a.createdAt);
 }
 
+export async function getPhotoById(id: string): Promise<StoredPhoto | null> {
+  const manifest = await readManifest();
+  return manifest.photos.find((p) => p.id === id) ?? null;
+}
+
 async function loadSharp(): Promise<typeof sharp> {
   const { default: sharp } = await import("sharp");
   return sharp;
@@ -56,6 +62,7 @@ async function loadSharp(): Promise<typeof sharp> {
 export async function addPhoto(
   buffer: Buffer,
   caption?: string,
+  journal?: string,
 ): Promise<StoredPhoto> {
   const sharp = await loadSharp();
   const id = crypto.randomUUID();
@@ -110,6 +117,7 @@ export async function addPhoto(
   const photo: StoredPhoto = {
     id,
     caption: caption?.trim() || undefined,
+    journal: journal?.trim() || undefined,
     createdAt: Date.now(),
     mimeType: fullContentType,
     width,
@@ -125,18 +133,25 @@ export async function addPhoto(
   return photo;
 }
 
-export async function updatePhotoCaption(
+export async function updatePhoto(
   id: string,
-  caption: string,
+  updates: { caption?: string; journal?: string },
 ): Promise<StoredPhoto | null> {
   const manifest = await readManifest();
   const index = manifest.photos.findIndex((p) => p.id === id);
   if (index < 0) return null;
 
-  manifest.photos[index] = {
-    ...manifest.photos[index],
-    caption: caption.trim() || undefined,
-  };
+  const current = manifest.photos[index];
+  const next = { ...current };
+
+  if (updates.caption !== undefined) {
+    next.caption = updates.caption.trim() || undefined;
+  }
+  if (updates.journal !== undefined) {
+    next.journal = updates.journal.trim() || undefined;
+  }
+
+  manifest.photos[index] = next;
   await writeManifest(manifest);
   return manifest.photos[index];
 }

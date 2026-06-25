@@ -1,6 +1,7 @@
 export interface Photo {
   id: string;
   caption?: string;
+  journal?: string;
   createdAt: number;
   mimeType: string;
   width?: number;
@@ -12,5 +13,6 @@ export interface Photo {
 export interface PhotoMeta {
   id: string;
   caption?: string;
+  journal?: string;
   createdAt: number;
 }

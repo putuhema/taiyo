@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   deletePhoto,
-  updatePhotoCaption,
+  updatePhoto,
 } from "@/app/lib/server/blob-storage";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -10,9 +10,16 @@ export async function PATCH(request: Request, context: RouteContext) {
   try {
     const { id } = await context.params;
     const body = await request.json();
-    const caption = typeof body.caption === "string" ? body.caption : "";
 
-    const photo = await updatePhotoCaption(id, caption);
+    const updates: { caption?: string; journal?: string } = {};
+    if (typeof body.caption === "string") updates.caption = body.caption;
+    if (typeof body.journal === "string") updates.journal = body.journal;
+
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: "No updates provided" }, { status: 400 });
+    }
+
+    const photo = await updatePhoto(id, updates);
     if (!photo) {
       return NextResponse.json({ error: "Photo not found" }, { status: 404 });
     }
@@ -20,7 +27,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json(photo);
   } catch (error) {
     console.error("PATCH /api/photos/[id]", error);
-    return NextResponse.json({ error: "Failed to update caption" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update photo" }, { status: 500 });
   }
 }
 

@@ -1,46 +1,47 @@
 "use client";
 
-import type { ViewMode } from "../lib/view-mode";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface ViewToggleProps {
-  mode: ViewMode;
-  onChange: (mode: ViewMode) => void;
   className?: string;
 }
 
-export function ViewToggle({ mode, onChange, className = "" }: ViewToggleProps) {
+export function ViewToggle({ className = "" }: ViewToggleProps) {
+  const pathname = usePathname();
+  const isFeed = pathname === "/feed";
+  const isGallery = pathname === "/gallery";
+
   return (
     <div
       className={`inline-flex rounded-full border border-[var(--border)] bg-[var(--surface)]/90 p-1 backdrop-blur-sm ${className}`}
       role="tablist"
       aria-label="View mode"
     >
-      <button
-        type="button"
+      <Link
+        href="/feed"
         role="tab"
-        aria-selected={mode === "feed"}
-        onClick={() => onChange("feed")}
+        aria-selected={isFeed}
         className={`rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-widest transition-colors ${
-          mode === "feed"
+          isFeed
             ? "bg-[var(--accent)] text-[var(--background)]"
             : "text-[var(--muted)] hover:text-[var(--foreground)]"
         }`}
       >
         Feed
-      </button>
-      <button
-        type="button"
+      </Link>
+      <Link
+        href="/gallery"
         role="tab"
-        aria-selected={mode === "grid"}
-        onClick={() => onChange("grid")}
+        aria-selected={isGallery}
         className={`rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-widest transition-colors ${
-          mode === "grid"
+          isGallery
             ? "bg-[var(--accent)] text-[var(--background)]"
             : "text-[var(--muted)] hover:text-[var(--foreground)]"
         }`}
       >
-        Grid
-      </button>
+        Gallery
+      </Link>
     </div>
   );
 }

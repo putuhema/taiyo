@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get("file");
     const caption = formData.get("caption");
+    const journal = formData.get("journal");
 
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No image file provided" }, { status: 400 });
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
     const photo = await addPhoto(
       buffer,
       typeof caption === "string" ? caption : undefined,
+      typeof journal === "string" ? journal : undefined,
     );
 
     return NextResponse.json(photo, { status: 201 });
